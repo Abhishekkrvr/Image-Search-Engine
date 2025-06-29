@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Image Search App</title>
+    <style>
+      html {
+        overflow-x: hidden;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: Verdana, Geneva, Tahoma, sans-serif;
+        background: linear-gradient(to right, #f3f4f6, #e0e7ff);
+        color: #333;
+        min-height: 100vh;
+        overflow-x: hidden;
+        position: relative;
+      }
+
+      h1 {
+        text-align: center;
+        font-size: clamp(2.5rem, 5vw, 3rem);
+        font-weight: bold;
+        margin-top: 40px;
+        margin-bottom: 5px;
+        color: #4f46e5;
+        animation: fadeInDown 1s ease;
+      }
+
+      h2 {
+        font-family: monospace;
+        text-align: center;
+        font-size: clamp(0.8rem, 2vw, 1rem);
+        font-weight: bold;
+        margin-top: 5px;
+        margin-bottom: 40px;
+        color: #4338ca;
+        animation: fadeInDown 1.3s ease;
+      }
+
+      form {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 12px;
+        padding: 0 20px;
+        margin-bottom: 40px;
+        animation: fadeInUp 1s ease;
+      }
+
+      #search-input {
+        flex: 1;
+        min-width: 240px;
+        max-width: 400px;
+        padding: 12px 18px;
+        font-size: 1rem;
+        border: 2px solid #d1d5db;
+        border-radius: 8px;
+        outline: none;
+        transition: border-color 0.3s, box-shadow 0.3s;
+        background-color: white;
+      }
+
+      #search-input:focus {
+        border-color: #6366f1;
+        box-shadow: 0 0 5px rgba(99, 102, 241, 0.5);
+      }
+
+      #search-button {
+        padding: 12px 20px;
+        font-size: 1rem;
+        background-color: #6366f1;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.3s ease-in-out;
+      }
+
+      #search-button:hover {
+        background-color: #4338ca;
+        transform: translateY(-2px);
+      }
+
+      .search-results {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: 20px;
+        max-width: 1200px;
+        margin: 0 auto 40px;
+        padding: 0 20px;
+        animation: fadeIn 1.2s ease-in-out;
+      }
+
+      .search-result {
+        background-color: white;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
+
+      .search-result:hover {
+        transform: scale(1.02);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+      }
+
+      .search-result img {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+        transition: transform 0.3s ease;
+      }
+
+      .search-result a {
+        display: block;
+        padding: 10px 14px;
+        text-decoration: none;
+        color: #111827;
+        font-weight: 500;
+        background-color: #f9fafb;
+        transition: background-color 0.3s;
+      }
+
+      .search-result a:hover {
+        background-color: #e5e7eb;
+      }
+
+      #show-more-button {
+        background: #10b981;
+        color: white;
+        border: none;
+        padding: 12px 32px;
+        border-radius: 30px;
+        font-size: 1rem;
+        cursor: pointer;
+        margin: 20px auto 60px;
+        display: none;
+        transition: all 0.3s ease;
+      }
+
+      #show-more-button:hover {
+        background: linear-gradient(135deg, #0f766e, #0d9488);
+        transform: scale(1.05);
+      }
+
+      .background-shapes {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        overflow: hidden;
+        z-index: -1;
+      }
+
+      .circle {
+        position: absolute;
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        background-color: rgba(99, 102, 241, 0.15);
+        animation: float 6s ease-in-out infinite;
+      }
+
+      .circle:nth-child(1) { top: 10%; left: 20%; animation-delay: 0s; }
+      .circle:nth-child(2) { top: 40%; left: 70%; animation-delay: 2s; }
+      .circle:nth-child(3) { top: 80%; left: 30%; animation-delay: 4s; }
+
+      @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+
+      @keyframes fadeInDown {
+        from { opacity: 0; transform: translateY(-20px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+
+      @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+
+      @keyframes float {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-20px); }
+      }
+
+      @media (max-width: 768px) {
+        form {
+          flex-direction: row;
+          justify-content: center;
+        }
+
+        #search-input {
+          flex-grow: 1;
+          width: 70%;
+        }
+
+        #search-button {
+          width: auto;
+          padding: 10px 16px;
+        }
+      }
+
+      @media (max-width: 480px) {
+        form {
+          flex-direction: column;
+          gap: 10px;
+        }
+
+        #search-input {
+          width: 90%;
+          font-size: 0.95rem;
+        }
+
+        #search-button {
+          width: 50%;
+          font-size: 0.95rem;
+        }
+
+        .search-result img {
+          height: 180px;
+        }
+
+        #show-more-button {
+          padding: 10px 24px;
+          font-size: 0.95rem;
+          border-radius: 24px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="background-shapes">
+      <div class="circle"></div>
+      <div class="circle"></div>
+      <div class="circle"></div>
+    </div>
+    <h1>LEONIQUE</h1>
+    <h2>By Abhishek kr. Verma</h2>
+    <form>
+      <input type="text" id="search-input" placeholder="Search any image..." />
+      <button id="search-button">Search</button>
+    </form>
+    <div class="search-results"></div>
+    <button id="show-more-button">Show more</button>
+
+    <script>
+      const accessKey = "RZEIOVfPhS7vMLkFdd2TSKGFBS4o9_FmcV1Nje3FSjw";
+
+      const formEl = document.querySelector("form");
+      const searchInputEl = document.getElementById("search-input");
+      const searchResultsEl = document.querySelector(".search-results");
+      const showMoreButtonEl = document.getElementById("show-more-button");
+
+      let inputData = "";
+      let page = 1;
+
+      async function searchImages() {
+        inputData = searchInputEl.value;
+        const url = `https://api.unsplash.com/search/photos?page=${page}&query=${inputData}&client_id=${accessKey}`;
+
+        const response = await fetch(url);
+        const data = await response.json();
+
+        if (page === 1) {
+          searchResultsEl.innerHTML = "";
+        }
+
+        const results = data.results;
+
+        results.map((result) => {
+          const imageWrapper = document.createElement("div");
+          imageWrapper.classList.add("search-result");
+
+          const image = document.createElement("img");
+          image.src = result.urls.small;
+          image.alt = result.alt_description;
+
+          const imageLink = document.createElement("a");
+          imageLink.href = result.links.html;
+          imageLink.target = "_blank";
+          imageLink.textContent = result.alt_description || "View Image";
+
+          imageWrapper.appendChild(image);
+          imageWrapper.appendChild(imageLink);
+          searchResultsEl.appendChild(imageWrapper);
+        });
+
+        page++;
+
+        if (page > 1) {
+          showMoreButtonEl.style.display = "block";
+        }
+      }
+
+      formEl.addEventListener("submit", (event) => {
+        event.preventDefault();
+        page = 1;
+        searchImages();
+      });
+
+      showMoreButtonEl.addEventListener("click", () => {
+        searchImages();
+      });
+    </script>
+  </body>
+</html>
